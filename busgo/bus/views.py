@@ -54,7 +54,13 @@ def book_ticket(request, schedule_id):
 
 def booking_success(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
-    return render(request, 'bus/booking_success.html', {'booking': booking})
+    total_price = booking.number_of_tickets * booking.schedule.price
+
+    context = {
+        'booking': booking,
+        'total_price': total_price,
+    }
+    return render(request, 'bus/booking_success.html', context)
 
 def ticket_detail(request, schedule_id):
     schedule = get_object_or_404(Schedule, id=schedule_id)
@@ -83,7 +89,6 @@ def search_schedules(request):
         except ValueError:
             pass # Atau tambahkan pesan error ke user
 
-    # Urutkan hasil
     schedules = schedules.order_by('departure_time')
 
     context = {
