@@ -54,7 +54,18 @@ class BookingAdmin(admin.ModelAdmin):
             'fields': ('is_paid', 'booking_date'),
         }),
     )
+    actions = ['mark_as_paid', 'mark_as_unpaid']
 
     def schedule_info(self, obj):
         return f"{obj.schedule.origin} - {obj.schedule.destination} ({obj.schedule.departure_time.strftime('%Y-%m-%d %H:%M')})"
     schedule_info.short_description = 'Schedule' # Nama kolom di admin
+    
+    @admin.action(description='Mark selected bookings as paid')
+    def mark_as_paid(self, request, queryset):
+        updated = queryset.update(is_paid=True)
+        self.message_user(request, f"{updated} bookings were successfully marked as paid.")
+
+    @admin.action(description='Mark selected bookings as unpaid')
+    def mark_as_unpaid(self, request, queryset):
+        updated = queryset.update(is_paid=False)
+        self.message_user(request, f"{updated} bookings were successfully marked as unpaid.")
